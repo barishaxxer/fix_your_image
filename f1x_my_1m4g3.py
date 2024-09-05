@@ -13,17 +13,35 @@ def init_argparse():
 
 def main():
     args = init_argparse()
+    if identify_file_type(args.file[0]) == "bmp":
+        print("Identified file type as bmp")
+        fix_bmp(args.file[0])
+    else :
+        print("File type not supported")
+        exit(1)
+
+
 
 
 
 
 def identify_file_type(file_path):
-    with open("test.txt", "rb") as file:
-        data = file.read()
-        data_hex = binascii.hexlify(data).decode("utf-8")
+   mgc = magic.Magic()
+   file_type = mgc.from_file(file_path)
+   if file_type == "data":
+       return "bmp"
+   return file_type
 
-    with open("test24.txt", "wb") as files:
-        files.write(binascii.unhexlify(data_hex.replace("73","98")))
+
+
+
+
+
+
+
+
+
+
 
 
 
