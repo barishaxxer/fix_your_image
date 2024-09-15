@@ -23,8 +23,14 @@ def init_argparse():
 
 def main():
     args = init_argparse()
+ feat/bmp_fix
+
+
+    if identify_file_type(args.file[0]).strip() == "bmp":
+
     if identify_file_type(args.file[0]) == "bmp":
  feat/bmp_fix
+ main
         if args.identify:
             print("Identified file type as bmp")
             exit(0)
@@ -44,7 +50,62 @@ def main():
 
 
 def fix_bmp(file_path):
-    with open(file_path,"rb") as f:
+    fx_magic_byte,fix_dib,file_size,actual_size,actual_height,actual_width = load_bmp(file_path)
+    if file_size == actual_size:
+        exit("No need to fix")
+    print(fix_bmp_width(file_path,fix_dib,fx_magic_byte,file_size,actual_height))
+    print(fix_bmp_height(file_path,fix_dib,fx_magic_byte,file_size,actual_width))
+    print(fix_bmp_16_9(file_path,fix_dib,fx_magic_byte,file_size))
+    return "Fixed images saved as width.bmp and height.bmp"
+def fix_bmp_width(file_path,fix_dib,fx_magic_byte,file_size,actual_height):
+    """
+    Keeps the height and fixes the width of the image to reach the actual size
+    :param file_path:
+    :param fix_dib:
+    :param fx_magic_byte:
+    :param file_size:
+    :param actual_height:
+    :return: String
+
+    """
+    if actual_height == 0:
+        return "Height is 0 passing this step"
+    req_width = hex(file_size // (actual_height * 3)).replace("0x", "").zfill(8)
+    r2 = "".join([req_width[i:i + 2] for i in range(0, 8, 2)][::-1])
+    fix = fx_magic_byte.replace(fix_dib[36:44], r2, 1)
+    dib_fix = fix_dib.replace(fix_dib[36:44], r2, 1)
+    with open("width.bmp", "wb") as y:
+        y.write(binascii.unhexlify(fix))
+    with open("offset_dib_width.bmp", "wb") as x:
+        x.write(binascii.unhexlify(dib_fix))
+    return "Fixed width saved as width.bmp suffix"
+def fix_bmp_height(file_path,fix_dib,fx_magic_byte,file_size,actual_width):
+    """
+    Keeps the width and fixes the width of the image to reach the actual size
+    :param file_path:
+    :param fix_dib:
+    :param fx_magic_byte:
+    :param file_size:
+    :param actual_width:
+    :return: String
+
+    """
+    if actual_width == 0:
+        return "Width is 0 passing this step"
+    req_height = hex(file_size // (actual_width * 3)).replace("0x", "").zfill(8)
+
+    r1 = "".join([req_height[i:i + 2] for i in range(0, 8, 2)][::-1])
+
+    fix = fx_magic_byte.replace(fix_dib[44:52], r1, 1)
+    dib_fix = fix_dib.replace(fix_dib[44:52], r1, 1)
+    with open("height.bmp", "wb") as z:
+        z.write(binascii.unhexlify(fix))
+    with open("offset_dib_height.bmp", "wb") as f:
+        f.write(binascii.unhexlify(dib_fix))
+    return "Fixed height saved as height.bmp suffix"
+
+def load_bmp(file_path):
+    with (open(file_path,"rb") as f):
         data = f.read()
 
         hex_data = binascii.hexlify(data).decode("utf-8")
@@ -55,6 +116,7 @@ def fix_bmp(file_path):
 
         #because bmp files using little endian reverse
         file_size = int(le_4+le_3+le_2+le_1,16) - 54
+
         #fix DIB header
         fix_dib = fx_magic_byte.replace(fx_magic_byte[20:36],"3600000028000000",1)
         #width
@@ -65,18 +127,54 @@ def fix_bmp(file_path):
         height1,height2,height3,height4 = [fix_dib[i:i+2] for i in range(44, 52, 2)]
         actual_height = int(height4+height3+height2+height1,16)
         actual_size = actual_width * actual_height * 3
-        if actual_size < file_size:
-            if actual_height > actual_width:
-                req_width = hex(file_size // (actual_height * 3))
-                req_height = hex(actual_height)
-            elif actual_width > actual_height:
-                req_height = hex(file_size // (actual_width * 3))
-                req_width = hex(actual_width)
-        #fin_img = fix_dib.replace(fix_dib[])
-        return req_width, req_height
+        return  fx_magic_byte,fix_dib,file_size,actual_size,actual_height,actual_width
+
+def fix_bmp_16_9(file_path,fix_dib,fx_magic_byte,file_size):
+    #according to 16:9 aspect ratio
+    x = (file_size // (16 * 3 * 9))
+    x = x ** (1 / 2)
+    heix = round(16 * x)
+    widx = round(9 * x)
+
+    width = hex(heix + (heix % 4)).replace("0x", "").zfill(8)
+    height = hex(widx + (widx % 4)).replace("0x", "").zfill(8)
+    r1 = "".join([height[i:i + 2] for i in range(0, 8, 2)][::-1])
+    r2 = "".join([width[i:i + 2] for i in range(0, 8, 2)][::-1])
+    fix = fx_magic_byte.replace(fix_dib[36:44], r2, 1)
+    fix = fix.replace(fix[44:52], r1, 1)
+    dib_fix = fix_dib.replace(fix_dib[36:44], r2, 1)
+    dib_fix = dib_fix.replace(dib_fix[44:52], r1, 1)
+    with open("16_9.bmp", "wb") as b:
+        b.write(binascii.unhexlify(fix))
+
+    with open("offset_dib_16_9.bmp", "wb") as a:
+        a.write(binascii.unhexlify(dib_fix))
+
+    return "Fixed 16:9 ratio saved as 16_9.bmp suffix"
+
 
  main
 def identify_file_type(file_path):
+ feat/bmp_fix
+   mgc = magic.Magic()
+   file_type = mgc.from_file(file_path)
+   if file_type.strip() == "data" or file_type.startswith("PC bitmap"):
+       return "bmp"
+   return file_type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     mgc = magic.Magic()
     file_type = mgc.from_file(file_path)
     if file_type == "data":
@@ -84,4 +182,5 @@ def identify_file_type(file_path):
     return file_type
 
 
+ main
 main()
