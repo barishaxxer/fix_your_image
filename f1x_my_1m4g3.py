@@ -2,7 +2,11 @@ import binascii
 import magic
 import argparse
 
-
+RESET = "\033[0m"
+YELLOW = "\033[33m"
+CYAN = "\033[36m"
+GREEN = "\033[32m"
+RED = "\033[31m"
 def init_argparse():
     parser = argparse.ArgumentParser(
         prog="f1x_my_1m4g3",
@@ -43,7 +47,7 @@ def fix_bmp(file_path):
     print(fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height))
     print(fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width))
     print(fix_bmp_16_9(fix_dib, fx_magic_byte, file_size))
-    return "Fixed images saved as width.bmp and height.bmp"
+
 
 
 def fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height):
@@ -96,6 +100,31 @@ def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
     return "Fixed height saved as height.bmp suffix"
 
 
+
+
+def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
+    # according to 16:9 aspect ratio
+    x = file_size // (16 * 3 * 9)
+    x = x ** (1 / 2)
+    heix = round(16 * x)
+    widx = round(9 * x)
+
+    width = hex(heix + (heix % 4)).replace("0x", "").zfill(8)
+    height = hex(widx + (widx % 4)).replace("0x", "").zfill(8)
+    r1 = "".join([height[i : i + 2] for i in range(0, 8, 2)][::-1])
+    r2 = "".join([width[i : i + 2] for i in range(0, 8, 2)][::-1])
+    fix = fx_magic_byte.replace(fix_dib[36:44], r2, 1)
+    fix = fix.replace(fix[44:52], r1, 1)
+    dib_fix = fix_dib.replace(fix_dib[36:44], r2, 1)
+    dib_fix = dib_fix.replace(dib_fix[44:52], r1, 1)
+    with open("16_9.bmp", "wb") as b:
+        b.write(binascii.unhexlify(fix))
+
+    with open("offset_dib_16_9.bmp", "wb") as a:
+        a.write(binascii.unhexlify(dib_fix))
+
+    return "Fixed 16:9 ratio saved as 16_9.bmp suffix"
+
 def load_bmp(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
@@ -130,29 +159,6 @@ def load_bmp(file_path):
             actual_width,
         )
 
-
-def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
-    # according to 16:9 aspect ratio
-    x = file_size // (16 * 3 * 9)
-    x = x ** (1 / 2)
-    heix = round(16 * x)
-    widx = round(9 * x)
-
-    width = hex(heix + (heix % 4)).replace("0x", "").zfill(8)
-    height = hex(widx + (widx % 4)).replace("0x", "").zfill(8)
-    r1 = "".join([height[i : i + 2] for i in range(0, 8, 2)][::-1])
-    r2 = "".join([width[i : i + 2] for i in range(0, 8, 2)][::-1])
-    fix = fx_magic_byte.replace(fix_dib[36:44], r2, 1)
-    fix = fix.replace(fix[44:52], r1, 1)
-    dib_fix = fix_dib.replace(fix_dib[36:44], r2, 1)
-    dib_fix = dib_fix.replace(dib_fix[44:52], r1, 1)
-    with open("16_9.bmp", "wb") as b:
-        b.write(binascii.unhexlify(fix))
-
-    with open("offset_dib_16_9.bmp", "wb") as a:
-        a.write(binascii.unhexlify(dib_fix))
-
-    return "Fixed 16:9 ratio saved as 16_9.bmp suffix"
 
 
 def identify_file_type(file_path):
