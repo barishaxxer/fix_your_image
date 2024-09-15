@@ -5,48 +5,29 @@ import argparse
 
 
 def init_argparse():
-    parser = argparse.ArgumentParser(
-        prog="f1x_my_1m4g3",
-        description="Fix corrupted images",
-        epilog="https://github.com/barishaxxer/fix_your_image",
-    )
-    parser.add_argument("-f", "--file", help="Target image", nargs=1, required=True)
-    parser.add_argument(
-        "-i",
-        "--identify",
-        help="Identify file type",
-        required=False,
-        action="store_true",
-    )
+    parser = argparse.ArgumentParser(prog="f1x_my_1m4g3",
+                                     description="Fix corrupted images",
+                                     epilog="https://github.com/barishaxxer/fix_your_image")
+    parser.add_argument("-f","--file",help="Target image",nargs=1,required=True)
+    parser.add_argument("-i", "--identify", help="Identify file type", required=False,action="store_true")
     return parser.parse_args()
 
 
 def main():
     args = init_argparse()
- feat/bmp_fix
 
 
     if identify_file_type(args.file[0]).strip() == "bmp":
-
-    if identify_file_type(args.file[0]) == "bmp":
- feat/bmp_fix
- main
         if args.identify:
             print("Identified file type as bmp")
             exit(0)
         print("Identified file type as bmp, fixing...")
         print(fix_bmp(args.file[0]))
     else :
-
-        print("Identified file type as bmp")
-        fix_bmp(args.file[0])
-    else:
- main
         print("File type not supported")
         exit(1)
 
 
- feat/bmp_fix
 
 
 def fix_bmp(file_path):
@@ -153,9 +134,7 @@ def fix_bmp_16_9(file_path,fix_dib,fx_magic_byte,file_size):
     return "Fixed 16:9 ratio saved as 16_9.bmp suffix"
 
 
- main
 def identify_file_type(file_path):
- feat/bmp_fix
    mgc = magic.Magic()
    file_type = mgc.from_file(file_path)
    if file_type.strip() == "data" or file_type.startswith("PC bitmap"):
@@ -174,13 +153,4 @@ def identify_file_type(file_path):
 
 
 
-
-    mgc = magic.Magic()
-    file_type = mgc.from_file(file_path)
-    if file_type == "data":
-        return "bmp"
-    return file_type
-
-
- main
 main()
