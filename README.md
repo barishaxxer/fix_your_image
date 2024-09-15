@@ -9,6 +9,7 @@ python f1x_my_1m4g3.py -f 0xByteStream_Challenge_Corrupted_File
 ```
 
 </details>
+
 ## Usage
 
 İdentify Mode:
