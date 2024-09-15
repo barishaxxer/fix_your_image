@@ -7,6 +7,8 @@ YELLOW = "\033[33m"
 CYAN = "\033[36m"
 GREEN = "\033[32m"
 RED = "\033[31m"
+
+
 def init_argparse():
     parser = argparse.ArgumentParser(
         prog="f1x_my_1m4g3",
@@ -48,7 +50,6 @@ def fix_bmp(file_path):
     print(fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width))
     print(fix_bmp_16_9(fix_dib, fx_magic_byte, file_size))
     return f"{GREEN}Image fixed successfully.{RESET}"
-
 
 
 def fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height):
@@ -101,8 +102,6 @@ def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
     return f"{CYAN}Fixing: Fixed height will be saved as height.bmp suffix{RESET}"
 
 
-
-
 def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
     # according to 16:9 aspect ratio
     x = file_size // (16 * 3 * 9)
@@ -125,6 +124,7 @@ def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
         a.write(binascii.unhexlify(dib_fix))
 
     return f"{CYAN}Fixing: Fixed 16:9 ratio will be saved as 16_9.bmp suffix{RESET}"
+
 
 def load_bmp(file_path):
     with open(file_path, "rb") as f:
@@ -159,7 +159,6 @@ def load_bmp(file_path):
             actual_height,
             actual_width,
         )
-
 
 
 def identify_file_type(file_path):
