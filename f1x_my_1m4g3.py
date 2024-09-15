@@ -29,9 +29,9 @@ def main():
 
     if identify_file_type(args.file[0]).strip() == "bmp":
         if args.identify:
-            print("Identified file type as bmp")
+            print(f"{GREEN}Identified file type as bmp{RESET}")
             exit(0)
-        print("Identified file type as bmp, fixing...")
+        print(f"{YELLOW}Identified file type as bmp, fixing...{RESET}")
         print(fix_bmp(args.file[0]))
     else:
         print("File type not supported")
@@ -47,6 +47,7 @@ def fix_bmp(file_path):
     print(fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height))
     print(fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width))
     print(fix_bmp_16_9(fix_dib, fx_magic_byte, file_size))
+    return f"{GREEN}Image fixed successfully.{RESET}"
 
 
 
@@ -62,7 +63,7 @@ def fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height):
 
     """
     if actual_height == 0:
-        return "Height is 0 passing this step"
+        return f"{RED}Height is 0 passing this step{RESET}"
     req_width = hex(file_size // (actual_height * 3)).replace("0x", "").zfill(8)
     r2 = "".join([req_width[i : i + 2] for i in range(0, 8, 2)][::-1])
     fix = fx_magic_byte.replace(fix_dib[36:44], r2, 1)
@@ -71,7 +72,7 @@ def fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height):
         y.write(binascii.unhexlify(fix))
     with open("offset_dib_width.bmp", "wb") as x:
         x.write(binascii.unhexlify(dib_fix))
-    return "Fixed width saved as width.bmp suffix"
+    return f"{CYAN}Fixing:Fixed width will be saved as width.bmp suffix{RESET}"
 
 
 def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
@@ -86,7 +87,7 @@ def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
 
     """
     if actual_width == 0:
-        return "Width is 0 passing this step"
+        return f"{RED}Width is 0 passing this step{RESET}"
     req_height = hex(file_size // (actual_width * 3)).replace("0x", "").zfill(8)
 
     r1 = "".join([req_height[i : i + 2] for i in range(0, 8, 2)][::-1])
@@ -97,7 +98,7 @@ def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
         z.write(binascii.unhexlify(fix))
     with open("offset_dib_height.bmp", "wb") as f:
         f.write(binascii.unhexlify(dib_fix))
-    return "Fixed height saved as height.bmp suffix"
+    return f"{CYAN}Fixing: Fixed height will be saved as height.bmp suffix{RESET}"
 
 
 
@@ -123,7 +124,7 @@ def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
     with open("offset_dib_16_9.bmp", "wb") as a:
         a.write(binascii.unhexlify(dib_fix))
 
-    return "Fixed 16:9 ratio saved as 16_9.bmp suffix"
+    return f"{CYAN}Fixing: Fixed 16:9 ratio will be saved as 16_9.bmp suffix{RESET}"
 
 def load_bmp(file_path):
     with open(file_path, "rb") as f:
