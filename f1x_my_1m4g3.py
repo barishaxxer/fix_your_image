@@ -40,16 +40,16 @@ def fix_bmp(file_path):
     )
     if file_size == actual_size:
         exit("No need to fix")
-    print(fix_bmp_width(file_path, fix_dib, fx_magic_byte, file_size, actual_height))
-    print(fix_bmp_height(file_path, fix_dib, fx_magic_byte, file_size, actual_width))
-    print(fix_bmp_16_9(file_path, fix_dib, fx_magic_byte, file_size))
+    print(fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height))
+    print(fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width))
+    print(fix_bmp_16_9(fix_dib, fx_magic_byte, file_size))
     return "Fixed images saved as width.bmp and height.bmp"
 
 
-def fix_bmp_width(file_path, fix_dib, fx_magic_byte, file_size, actual_height):
+def fix_bmp_width(fix_dib, fx_magic_byte, file_size, actual_height):
     """
     Keeps the height and fixes the width of the image to reach the actual size
-    :param file_path:
+
     :param fix_dib:
     :param fx_magic_byte:
     :param file_size:
@@ -70,10 +70,10 @@ def fix_bmp_width(file_path, fix_dib, fx_magic_byte, file_size, actual_height):
     return "Fixed width saved as width.bmp suffix"
 
 
-def fix_bmp_height(file_path, fix_dib, fx_magic_byte, file_size, actual_width):
+def fix_bmp_height(fix_dib, fx_magic_byte, file_size, actual_width):
     """
     Keeps the width and fixes the width of the image to reach the actual size
-    :param file_path:
+
     :param fix_dib:
     :param fx_magic_byte:
     :param file_size:
@@ -131,7 +131,7 @@ def load_bmp(file_path):
         )
 
 
-def fix_bmp_16_9(file_path, fix_dib, fx_magic_byte, file_size):
+def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
     # according to 16:9 aspect ratio
     x = file_size // (16 * 3 * 9)
     x = x ** (1 / 2)
