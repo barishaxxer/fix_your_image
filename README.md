@@ -32,15 +32,15 @@ Manipulates image bytes to fix.Works under three mode:
 
 # **TO DO**
 
--[x] BMP file fix
+- [x] BMP file fix
 
--[] JPG file fix
+- [] JPG file fix
 
--[] PNG file fix
+- [] PNG file fix
 
--[] PDF file fix
+- [] PDF file fix
 
--[] GIF file fix
+- [] GIF file fix
 
 # Collaborate
 
