@@ -168,5 +168,5 @@ def identify_file_type(file_path):
         return "bmp"
     return file_type
 
-
-main()
+if __name__ = "__main__":
+    main()
