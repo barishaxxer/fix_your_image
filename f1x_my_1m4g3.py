@@ -108,7 +108,7 @@ def fix_bmp_16_9(fix_dib, fx_magic_byte, file_size):
     x = x ** (1 / 2)
     heix = round(16 * x)
     widx = round(9 * x)
-
+    #to suit bmp padding, width and height must be divisible by 4
     width = hex(heix + (heix % 4)).replace("0x", "").zfill(8)
     height = hex(widx + (widx % 4)).replace("0x", "").zfill(8)
     r1 = "".join([height[i : i + 2] for i in range(0, 8, 2)][::-1])
