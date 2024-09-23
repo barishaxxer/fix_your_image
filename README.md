@@ -1,6 +1,6 @@
 # Fix Corrupted Images
-Save your corrupted images easily.A powerful image forensic tool.
-This repository comes with a ctf challenge to showcase tools usage purposes(0xByteStream_Challenge_Corrupted_File) and its restored version(Example_Fixed_Image.bmp).
+Save your corrupted images easily.A powerful image forensic tool.<br>
+This repository comes with a ctf challenge **0xByteStream_Challenge_Corrupted_File** to showcase tools usage purposes and its restored version **Example_Fixed_Image.bmp**.
 <details>
   <summary>Ctf solution</summary>
 
